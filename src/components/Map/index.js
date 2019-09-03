@@ -8,12 +8,13 @@ import Search from '../Search'
 import Directions from '../Directions';
 
 import markerImage from '../../assets/marker.png'
-import { LocationBox, LocationText } from './styles'
+import { LocationBox, LocationText, LocationTimeText, LocationTimeTextSmall, LocationTimeBox } from './styles'
 
 export default class Map extends Component {
   state = {
     region: null,
-    destination: null
+    destination: null,
+    duration: null
   }
 
   async componentDidMount () {
@@ -50,7 +51,7 @@ export default class Map extends Component {
   }
 
   render() {
-    const {region, destination} = this.state;
+    const {region, destination, duration} = this.state;
     return(
         <View style={{flex: 1}}>
         <MapBox
@@ -66,6 +67,8 @@ export default class Map extends Component {
                 origin={region}
                 destination={destination}
                 onReady={result => {
+                  this.setState({ duration: Math.floor(result.duration)})
+
                   this.mapView.fitToCoordinates(result.coordinates, {
                     edgePadding: {
                       right: getPixelSize(50),
@@ -79,6 +82,16 @@ export default class Map extends Component {
               <Marker  coordinate={destination} anchor={{ x: 0, y: 0  }} image={markerImage}>
                 <LocationBox>
                   <LocationText>{destination.title}</LocationText>
+                </LocationBox>
+              </Marker>
+
+              <Marker  coordinate={region} anchor={{ x: 0, y: 0  }}>
+                <LocationBox>
+                  <LocationTimeBox>
+                    <LocationTimeText>31</LocationTimeText>
+                    <LocationTimeTextSmall>MIN</LocationTimeTextSmall>
+                  </LocationTimeBox>
+                  <LocationText>Jovino Dinóa</LocationText>
                 </LocationBox>
               </Marker>
             </Fragment>
