@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import MapBox, { Marker } from 'react-native-maps';
 import { View } from 'react-native';
+import Geocoder from 'react-native-geocoding';
 
 import getPixelSize from './../../utils'
 
@@ -10,18 +11,26 @@ import Directions from '../Directions';
 import markerImage from '../../assets/marker.png'
 import { LocationBox, LocationText, LocationTimeText, LocationTimeTextSmall, LocationTimeBox } from './styles'
 
+Geocoder.init('AIzaSyDYtQWSLvZbvvwnokcIcqiFcOMglnpS9Eg');
+
 export default class Map extends Component {
   state = {
     region: null,
     destination: null,
-    duration: null
+    duration: null,
+    location: null
   }
 
   async componentDidMount () {
     navigator.geolocation.getCurrentPosition(
-      ({ coords: { latitude, longitude }}) => {
+      async ({ coords: { latitude, longitude }}) => {
+        const response = await Geocoder.from({ latitude, longitude });
+        const address = response.results[0].formatted_address;
+        const location = address.substring(0, address.indexOf(','));
+
         this.setState({
           region: {
+            location,
             latitude,
             longitude,
             latitudeDelta: 0.0143,
@@ -91,7 +100,7 @@ export default class Map extends Component {
                     <LocationTimeText>31</LocationTimeText>
                     <LocationTimeTextSmall>MIN</LocationTimeTextSmall>
                   </LocationTimeBox>
-                  <LocationText>Jovino Dinóa</LocationText>
+                  <LocationText>{location}</LocationText>
                 </LocationBox>
               </Marker>
             </Fragment>
